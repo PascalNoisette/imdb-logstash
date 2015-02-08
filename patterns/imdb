@@ -29,3 +29,4 @@ IMDB_ACTOR_AMBIGUOUS [^\)]+
 IMDB_MOVIE_FORMAT [^\)]+
 IMDB_ACTOR_NAME [^,\(]+
 IMDB_QUOTE \"
+IMDB_MOVIE_REFERENCE (?<movie_title>%{IMDB_MOVIE_TITLE:title}(, %{IMDB_MOVIE_PRON:pro_title})?\(%{IMDB_MOVIE_DATE:release:int}\)( )?(\(%{IMDB_MOVIE_FORMAT:format}\))?)([ ]+)?(\{%{IMDB_ROLE_MUSTASHE:mustashe}\})?
