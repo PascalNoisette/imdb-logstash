@@ -55,7 +55,7 @@ class LogStash::Inputs::Gunzip < LogStash::Inputs::Base
                         @gzstream[path] = Zlib::GzipReader.new(open(path), {"encoding"=>@codec.charset})
                 end
         end # def register
-
+        
         public
         def run(queue)
                 @path.each do |path|
@@ -76,8 +76,14 @@ class LogStash::Inputs::Gunzip < LogStash::Inputs::Base
                                 end
                         end
                 end
-                sleep(10)
-                finished
         end # def run
+        
+        public
+        def teardown
+                @path.each do |path|
+                        @gzstream[path].close
+                end
+                finished
+        end
 
 end # class LogStash::Inputs::Gunzip
