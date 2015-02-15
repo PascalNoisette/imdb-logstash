@@ -74,6 +74,9 @@ class LogStash::Inputs::Gunzip < LogStash::Inputs::Base
                                                 queue << event
                                         end
                                 end
+                                if @tail != 0 and lineNumber>@tail
+                                        break
+                                end# no more relevant data
                         end
                 end
         end # def run
