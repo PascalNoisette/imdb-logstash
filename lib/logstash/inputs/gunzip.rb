@@ -34,7 +34,7 @@ class LogStash::Inputs::Gunzip < LogStash::Inputs::Base
         default :codec, "plain"
 
         # Gz file path
-        config :path, :validate => :array, :required => true
+        config :path, :required => true
 
         # Ignore lines below the :tail
         config :tail, :validate => :number, :default => 0
@@ -50,7 +50,7 @@ class LogStash::Inputs::Gunzip < LogStash::Inputs::Base
         def register
                 @hostname = Socket.gethostname
                 @gzstream = {}
-                @path.each do |path|
+                @path.each do |path, cnf|
                         @logger.info("Opening file", :path => path)
                         @gzstream[path] = Zlib::GzipReader.new(open(path), {"encoding"=>@codec.charset})
                 end
@@ -58,8 +58,12 @@ class LogStash::Inputs::Gunzip < LogStash::Inputs::Base
         
         public
         def run(queue)
-                @path.each do |path|
+                @path.each do |path, cnf|
+                        @tail = cnf["tail"] if cnf.include?("tail")
+                        @head = cnf["head"] if cnf.include?("head")
+                        @delimiter = cnf["delimiter"] if cnf.include?("delimiter")
                         lineNumber = 0
+                        sleep(1) while queue.length > 0 # make sure the previous file has been processed
                         @gzstream[path].each_line do |line|
                                 lineNumber = lineNumber+1
                                 if lineNumber>=@head and (@tail == 0 or lineNumber<=@tail)
@@ -83,7 +87,7 @@ class LogStash::Inputs::Gunzip < LogStash::Inputs::Base
         
         public
         def teardown
-                @path.each do |path|
+                @path.each do |path, cnf|
                         @gzstream[path].close
                 end
                 finished
