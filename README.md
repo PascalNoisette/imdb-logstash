@@ -9,4 +9,6 @@ Input files :
 http://www.imdb.com/interfaces
 
 Usage :
-bin/logstash agent -v -f config
+bin/logstash-plugin install logstash-input-gunzip
+bin/logstash-plugin install logstash-filter-multiline
+bin/logstash agent -f config
